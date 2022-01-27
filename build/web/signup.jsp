@@ -72,7 +72,9 @@
                                     <span class="fa fa-refresh fa-spin fa-4x"></span>
                                     <h4>Please wait..</h4>
                                 </div>
-                                <button id="sumbimt-btn" type="submit" class="btn btn-primary" >Submit</button>
+                                <div class="container text-center">
+                                    <button type="submit" class="btn btn-primary" >Submit</button>
+                                </div>
                             </form>
                         </div>
                     </div>

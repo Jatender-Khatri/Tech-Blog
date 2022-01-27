@@ -4,6 +4,7 @@
     Author     : MeGa
 --%>
 
+<%@page import="com.tech.blog.model.Message"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -37,18 +38,31 @@
                                 <br>
                                 <p>Login Here</p>
                             </div>
+                            <%
+                                Message m = (Message) session.getAttribute("msg");
+                                if (m != null) {
+                            %>
+                            <div class="alert <%= m.getCssClass() %>" role="alert">
+                                <%= m.getContent() %>
+                            </div>  
+                            <%
+                                session.removeAttribute("msg");
+                                }
+                            %>
                             <div class="card-body">
-                                <form>
+                                <form action="LoginServlet" method="POST">
                                     <div class="form-group">
                                         <label for="exampleInputEmail1">Email address</label>
-                                        <input required type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                                        <input name="email" required type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
                                         <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                                     </div>
                                     <div class="form-group">
                                         <label for="exampleInputPassword1">Password</label>
-                                        <input required type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                                        <input name="password" required type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
                                     </div>
-                                    <button type="submit" class="btn btn-primary" >Submit</button>
+                                    <div class="container text-center">
+                                        <button type="submit" class="btn btn-primary" >Submit</button>
+                                    </div>
                                 </form>
                             </div>
                         </div>
