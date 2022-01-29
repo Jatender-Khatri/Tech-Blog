@@ -76,6 +76,45 @@
                 session.removeAttribute("msg");
             }
         %>
+        <!--main body of the page-->
+        <main>
+            <br>
+            <div class="container">
+                <!--first col-->
+                <div class="row">
+                    <div class="col-md-4">
+                        <!--categories-->
+                        <ul class="list-group">
+                            <a href="#" onclick="getPosts(0),this" class="c-link list-group-item list-group-item-action active">All Posts</a>
+                            <!--categories-->
+                            <%
+                                PostDao postDao = new PostDao(ConnectionProvider.getConnection());
+                                ArrayList<Category> list = postDao.getAllCategory();
+                                for (Category category : list) {
+
+
+                            %>
+                            <a href="#" onclick="getPosts(<%= category.getcId()%>,this)" class="c-link list-group-item list-group-item-action "><%= category.getName()%></a>
+                            <%
+                                }
+                            %>
+                        </ul>
+                    </div>
+                    <div class="col-md-8">
+                        <!--post-->
+                        <div class="container text-center" id="loader">
+                            <i class="fa fa-refresh fa-4x fa-spin"></i>
+                            <h3 class="mt-2">Loading...</h3>
+                        </div>
+                        <div class="container-fluid" id="post-container">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!--end main body of the page-->
+
         <!--profile model-->
 
         <!-- Button trigger modal -->
@@ -187,41 +226,41 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form action="AddPostServlet" method="POST">
+                        <form id="add-post-form" action="AddPostServlet" method="POST" enctype='multipart/form-data'>
                             <div class="form-group">
-                                <select class="form-control">
+                                <select class="form-control" name="cid">
                                     <option selected disabled>---- Select Category ----</option>
                                     <%
-                                        PostDao postDao = new PostDao(ConnectionProvider.getConnection());
-                                        ArrayList<Category> list = postDao.getAllCategory();
-                                        for (Category c : list) {
+                                        PostDao post = new PostDao(ConnectionProvider.getConnection());
+                                        ArrayList<Category> list1 = postDao.getAllCategory();
+                                        for (Category c : list1) {
                                     %>
-                                    <option><%= c.getName() %></option>
-                                    
+                                    <option value="<%= c.getcId()%>"><%= c.getName()%></option>
+
                                     <%
                                         }
                                     %>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <input  required type="text" placeholder="Enter Post Title" class="form-control" />
+                                <input name="pTitle"  type="text" placeholder="Enter Post Title" class="form-control" />
                             </div>
                             <div class="form-group">
-                                <textarea class="form-control" required placeholder="Enter your Content" style="height: 200px"></textarea>
+                                <textarea name="pContent" class="form-control"  placeholder="Enter your Content" style="height: 200px"></textarea>
                             </div>
                             <div class="form-group">
-                                <textarea class="form-control"  placeholder="Enter your Program (if any)" style="height: 200px"></textarea>
+                                <textarea name="pCode" class="form-control"  placeholder="Enter your Program (if any)" style="height: 200px"></textarea>
                             </div>
                             <div class="form-group">
                                 <label>Select Your Picture</label><br>
-                                <input type="file" />
+                                <input type="file" name="pic" />
+                            </div>
+                            <div class="container text-center">
+                                <button type="submit" class="btn btn-outline-primary">POST</button>
                             </div>
                         </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -232,25 +271,82 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script>
+                                $(document).ready(function () {
+                                    let editStatus = false;
 
+
+                                    $('#edit-profile-button').click(function () {
+                                        if (editStatus == false) {
+                                            $("#profile-details").hide()
+                                            $("#profile-edit").show();
+                                            editStatus = true;
+                                            $(this).text("Back")
+                                        } else {
+                                            $("#profile-details").show()
+                                            $("#profile-edit").hide();
+                                            editStatus = false;
+                                            $(this).text("Edit")
+                                        }
+                                    });
+                                });
+        </script>
+
+        <!--now add post js-->
         <script>
             $(document).ready(function () {
-                let editStatus = false;
+                $("#add-post-form").on("submit", function (event) {
+                    // this code gets called when form is submitted
+                    event.preventDefault();
+                    console.log("You hava clicked on submit..")
+                    let form = new FormData(this);
+                    //now requesting to server
+                    $.ajax({
+                        url: "AddPostServlet",
+                        type: 'POST',
+                        data: form,
+                        success: function (data, textStatus, jqXHR) {
+                            console.log(data);
+                            if (data.trim() == 'Done')
+                            {
+                                swal("Good job!", "Saved Successfully", "success");
+                            } else {
+                                swal("Good job!", "Saved Successfully", "success");
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            swal("Oops", "Something went wrong!", "error");
+                        },
+                        processData: false,
+                        contentType: false
+                    });
+                });
+            });
+        </script>
 
+        <!--loading page through ajax-->
+        <script>
 
-                $('#edit-profile-button').click(function () {
-                    if (editStatus == false) {
-                        $("#profile-details").hide()
-                        $("#profile-edit").show();
-                        editStatus = true;
-                        $(this).text("Back")
-                    } else {
-                        $("#profile-details").show()
-                        $("#profile-edit").hide();
-                        editStatus = false;
-                        $(this).text("Edit")
+            function getPosts(catId,temp) {
+                $("#loader").hide();
+                $("#post-container").hide();
+                $(".c-link").removeClass('active')
+                $.ajax({
+                    url: "load_posts.jsp",
+                    data: {cId: catId},
+                    success: function (data, textStatus, jqXHR) {
+                        console.log(data);
+                        $("#loader").hide();
+                        $("#post-container").show();
+                        $("#post-container").html(data);
+                        $(temp).addClass('active');
                     }
                 });
+            }
+            $(document).ready(function (e) {
+                let allPostRef = $('.c-link')[0]
+                getPosts(0,allPostRef);
             });
         </script>
     </body>
