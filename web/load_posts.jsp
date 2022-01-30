@@ -1,10 +1,19 @@
+<%@page import="com.tech.blog.model.User"%>
+<%@page import="com.tech.blog.dao.LikeDao"%>
 <%@page import="com.tech.blog.model.Post"%>
 <%@page import="java.util.List"%>
 <%@page import="com.tech.blog.helper.ConnectionProvider"%>
 <%@page import="com.tech.blog.dao.PostDao"%>
+<%@page errorPage="error_page.jsp" %>
+<%
+    User user = (User) session.getAttribute("currentUser");
+    if (user == null) {
+        response.sendRedirect("login.jsp");
+    }
+%>
 <div class="row">
     <%
-       
+
         PostDao d = new PostDao(ConnectionProvider.getConnection());
         Integer cid = Integer.parseInt(request.getParameter("cId"));
         List<Post> posts = null;
@@ -13,7 +22,7 @@
         } else {
             posts = d.getPostByCatId(cid);
         }
-        if(posts.size()==0){
+        if (posts.size() == 0) {
             out.println("<h3 class = 'display-3 text-center'>No posts in this Category</h3>");
         }
         for (Post p : posts) {
@@ -26,8 +35,11 @@
                 <p><%= p.getpContent()%></p>
             </div>
             <div class="card-footer primay_background text-center">
-                <a href="#!" class="btn btn-outline-light btn-sm"><i class="fa fa-thumbs-o-up"></i><span> 10</span></a>
-                <a href="show_blog_page.jsp?post_id=<%= p.getpId() %>" class="btn btn-outline-light btn-sm">Read More</a>
+                <%
+                    LikeDao likeDao = new LikeDao(ConnectionProvider.getConnection());
+                %>
+                <a href="#!" onclick="doLike(<%= p.getpId()%>, <%=user.getId()%>)" class="btn btn-outline-light btn-sm"><i class="fa fa-thumbs-o-up"></i><span class="like-counter"> <%= likeDao.countLikeOnPost(p.getpId())%></span></a>
+                <a href="show_blog_page.jsp?post_id=<%= p.getpId()%>" class="btn btn-outline-light btn-sm">Read More</a>
                 <a href="#!" class="btn btn-outline-light btn-sm"><i class="fa fa-commenting-o"></i><span> 20</span></a>
             </div>
         </div>
