@@ -23,7 +23,7 @@
           <a class="nav-link active" href="contact.jsp"><span class="fa fa-user"></span> Contact Us</a>
       </li>
       <li class="nav-item">
-          <a class="nav-link active" href="#"><span class="fa fa-eye"></span> About</a>
+          <a class="nav-link active" href="about.jsp"><span class="fa fa-eye"></span> About</a>
       </li>
       <li class="nav-item">
           <a class="nav-link active" href="login.jsp"><span class="fa fa-user-circle"></span> Login</a>

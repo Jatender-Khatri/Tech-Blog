@@ -25,6 +25,13 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link href="css/mystyle.css" rel="stylesheet" type="text/css"/>
+        <style>
+             body{
+                background: url(img/bg.jpeg);
+                background-size: cover;
+                background-attachment: fixed;
+            }   
+        </style>
     </head>
     <body>
         <!--navbar-->
@@ -312,7 +319,7 @@
                             {
                                 swal("Good job!", "Saved Successfully", "success");
                             } else {
-                                swal("Good job!", "Saved Successfully", "success");
+                                 swal("Oops", "Something went wrong!", "error");
                             }
                         },
                         error: function (jqXHR, textStatus, errorThrown) {

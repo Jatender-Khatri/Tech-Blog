@@ -3,9 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/E:/Feelancing/Fiverr/Deliver%20Orders/TechBlog/web/normal_navbar.jsp</file>
-            <file>file:/E:/Feelancing/Fiverr/Deliver%20Orders/TechBlog/web/contact.jsp</file>
-            <file>file:/E:/Feelancing/Fiverr/Deliver%20Orders/TechBlog/web/home.jsp</file>
+            <file>file:/E:/Feelancing/Fiverr/Deliver%20Orders/TechBlog/web/profile.jsp</file>
+            <file>file:/E:/Feelancing/Fiverr/Deliver%20Orders/TechBlog/web/load_posts.jsp</file>
+            <file>file:/E:/Feelancing/Fiverr/Deliver%20Orders/TechBlog/web/show_blog_page.jsp</file>
+            <file>file:/E:/Feelancing/Fiverr/Deliver%20Orders/TechBlog/src/java/com/tech/blog/dao/UserDao.java</file>
         </group>
     </open-files>
 </project-private>

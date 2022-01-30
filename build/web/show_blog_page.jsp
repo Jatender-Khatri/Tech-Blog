@@ -1,8 +1,15 @@
-<%@page import="com.tech.blog.model.Category"%>
+<%-- 
+    Document   : show_blog_page
+    Created on : Jan 29, 2022, 10:03:04 PM
+    Author     : MeGa
+--%>
+
+<%@page import="com.tech.blog.dao.UserDao"%>
 <%@page import="java.util.ArrayList"%>
+<%@page import="com.tech.blog.model.Category"%>
+<%@page import="com.tech.blog.model.Post"%>
 <%@page import="com.tech.blog.helper.ConnectionProvider"%>
 <%@page import="com.tech.blog.dao.PostDao"%>
-<%@page import="com.tech.blog.model.Message"%>
 <%@page import="com.tech.blog.model.User"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page errorPage="error_page.jsp" %>
@@ -12,12 +19,16 @@
         response.sendRedirect("login.jsp");
     }
 %>
+<%
+    Integer postId = Integer.parseInt(request.getParameter("post_id"));
+    PostDao postDao = new PostDao(ConnectionProvider.getConnection());
+    Post p = postDao.getPostByPostId(postId);
+%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Profile Page</title>
-
+        <title><%= p.getpTitle()%> || Learn code with Jatender khatri</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
@@ -26,24 +37,43 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link href="css/mystyle.css" rel="stylesheet" type="text/css"/>
         <style>
-             body{
+            .banner-background{
+                clip-path: polygon(50% 0%, 100% 0, 100% 35%, 100% 100%, 80% 90%, 50% 100%, 20% 89%, 0 100%, 0% 35%, 0 0);
+            }
+            .post-title{
+                font-weight: 100;
+                font-size: 30px;
+            }
+            .post-content{
+                font-weight: 100;
+                font-size: 25px;
+            }
+            .post-user-infor{
+                font-size: 20px;
+                
+            }
+            .row-user{
+                border: 1px solid #e2e2e2;
+                padding-top: 15px;
+            }
+            body{
                 background: url(img/bg.jpeg);
                 background-size: cover;
                 background-attachment: fixed;
-            }   
+            }
         </style>
     </head>
     <body>
         <!--navbar-->
         <nav class="navbar navbar-expand-lg navbar-dark primay_background">
-            <a class="navbar-brand" href="home.jsp"><span class ="fa fa-asterisk"></span> Tech Blog</a>
+            <a class="navbar-brand" href="#"><span class ="fa fa-asterisk"></span> Tech Blog</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="home.jsp"><span class="fa fa-bell-o"></span> Learn code with Jatender</a>
+                        <a class="nav-link" href="profile.jsp"><span class="fa fa-bell-o"></span> Learn code with Jatender</a>
                     </li>
                     <li class="nav-item active dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -71,57 +101,6 @@
             </div>
         </nav>
         <!--end navbar-->
-
-        <%
-            Message m = (Message) session.getAttribute("msg");
-            if (m != null) {
-        %>
-        <div class="alert <%= m.getCssClass()%>" role="alert">
-            <%= m.getContent()%>
-        </div>  
-        <%
-                session.removeAttribute("msg");
-            }
-        %>
-        <!--main body of the page-->
-        <main>
-            <br>
-            <div class="container">
-                <!--first col-->
-                <div class="row">
-                    <div class="col-md-4">
-                        <!--categories-->
-                        <ul class="list-group">
-                            <a href="#" onclick="getPosts(0),this" class="c-link list-group-item list-group-item-action active">All Posts</a>
-                            <!--categories-->
-                            <%
-                                PostDao postDao = new PostDao(ConnectionProvider.getConnection());
-                                ArrayList<Category> list = postDao.getAllCategory();
-                                for (Category category : list) {
-
-
-                            %>
-                            <a href="#" onclick="getPosts(<%= category.getcId()%>,this)" class="c-link list-group-item list-group-item-action "><%= category.getName()%></a>
-                            <%
-                                }
-                            %>
-                        </ul>
-                    </div>
-                    <div class="col-md-8">
-                        <!--post-->
-                        <div class="container text-center" id="loader">
-                            <i class="fa fa-refresh fa-4x fa-spin"></i>
-                            <h3 class="mt-2">Loading...</h3>
-                        </div>
-                        <div class="container-fluid" id="post-container">
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-        <!--end main body of the page-->
-
         <!--profile model-->
 
         <!-- Button trigger modal -->
@@ -218,7 +197,39 @@
             </div>
         </div>
         <!--end of profile model-->
+        <!--main content of body-->
+        <div class="container">
+            <div class="row my-4">
+                <div class="col-md-8 offset-md-2">
+                    <div class="card">
+                        <div class="card-header primay_background text-white">
+                            <h4 class="post-title"><%= p.getpTitle()%></h4>
+                        </div>
+                        <div class="card-body">
+                            <img class="card-img-top my-2" src="blog_pics/<%= p.getpPic()%>" alt="Card image cap" style="height: 250px" />
+                            <div class="row my-3 row-user">
+                                <div class="col-md-8">
+                                    <% UserDao userDao = new UserDao(ConnectionProvider.getConnection()); %>
+                                    <p class="post-user-infor"><a href="#!"><%= userDao.getUserByUserId(p.getUserId()).getName() %> </a> has posted :</p>
+                                </div>
+                            </div>
+                            <p class="post-content"><%= p.getpContent()%></p>
+                            <br>
+                            <br>
+                            <div class="post-code">
+                                <pre><%= p.getpCode()%></pre>
+                            </div>
+                        </div>
+                        <div class="card-footer primay_background">
+                            <a href="#!" class="btn btn-outline-light btn-sm"><i class="fa fa-thumbs-o-up"></i><span> 10</span></a>
 
+                            <a href="#!" class="btn btn-outline-light btn-sm"><i class="fa fa-commenting-o"></i><span> 20</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end of main content of the body-->
         <!--add post model-->
         <!-- Button trigger modal -->
 
@@ -280,24 +291,24 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script>
-                                $(document).ready(function () {
-                                    let editStatus = false;
+            $(document).ready(function () {
+                let editStatus = false;
 
 
-                                    $('#edit-profile-button').click(function () {
-                                        if (editStatus == false) {
-                                            $("#profile-details").hide()
-                                            $("#profile-edit").show();
-                                            editStatus = true;
-                                            $(this).text("Back")
-                                        } else {
-                                            $("#profile-details").show()
-                                            $("#profile-edit").hide();
-                                            editStatus = false;
-                                            $(this).text("Edit")
-                                        }
-                                    });
-                                });
+                $('#edit-profile-button').click(function () {
+                    if (editStatus == false) {
+                        $("#profile-details").hide()
+                        $("#profile-edit").show();
+                        editStatus = true;
+                        $(this).text("Back")
+                    } else {
+                        $("#profile-details").show()
+                        $("#profile-edit").hide();
+                        editStatus = false;
+                        $(this).text("Edit")
+                    }
+                });
+            });
         </script>
 
         <!--now add post js-->
@@ -319,7 +330,7 @@
                             {
                                 swal("Good job!", "Saved Successfully", "success");
                             } else {
-                                 swal("Oops", "Something went wrong!", "error");
+                                swal("Good job!", "Saved Successfully", "success");
                             }
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
@@ -332,29 +343,6 @@
             });
         </script>
 
-        <!--loading page through ajax-->
-        <script>
 
-            function getPosts(catId,temp) {
-                $("#loader").hide();
-                $("#post-container").hide();
-                $(".c-link").removeClass('active')
-                $.ajax({
-                    url: "load_posts.jsp",
-                    data: {cId: catId},
-                    success: function (data, textStatus, jqXHR) {
-                        console.log(data);
-                        $("#loader").hide();
-                        $("#post-container").show();
-                        $("#post-container").html(data);
-                        $(temp).addClass('active');
-                    }
-                });
-            }
-            $(document).ready(function (e) {
-                let allPostRef = $('.c-link')[0]
-                getPosts(0,allPostRef);
-            });
-        </script>
     </body>
 </html>
